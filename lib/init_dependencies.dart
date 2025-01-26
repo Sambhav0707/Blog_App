@@ -1,7 +1,9 @@
 import 'package:blog_app/core/app_secrets/supabase_app_keys.dart';
+import 'package:blog_app/core/comman/cubits/app_user_cubit/app_user_cubit.dart';
 import 'package:blog_app/features/Auth/data/datasources/auth_remote_data_source.dart';
 import 'package:blog_app/features/Auth/data/repository/auth_repository_impl.dart';
 import 'package:blog_app/features/Auth/domain/repository/auth_repository.dart';
+import 'package:blog_app/features/Auth/domain/useCases/current_user.dart';
 import 'package:blog_app/features/Auth/domain/useCases/user_login.dart';
 import 'package:blog_app/features/Auth/domain/useCases/user_sign_up.dart';
 import 'package:blog_app/features/Auth/presentation/bloc/auth_bloc.dart';
@@ -27,6 +29,11 @@ Future<void> initDependencies() async {
   // } catch (e) {
   //   throw Exception("Failed to initialize Supabase: $e");
   // }
+
+   // core
+  serviceLocator.registerLazySingleton(
+    () => AppUserCubit(),
+  );
 }
 
 void _authDependencies() {
@@ -47,8 +54,16 @@ void _authDependencies() {
         serviceLocator(),
       ));
 
+  serviceLocator.registerFactory(
+    () => CurrentUser(
+      serviceLocator(),
+    ),
+  );
+
   serviceLocator.registerLazySingleton(() => AuthBloc(
         userSignUp: serviceLocator(),
         userLogin: serviceLocator(),
+        currentUser: serviceLocator(),
+        appUserCubit: serviceLocator(),
       ));
 }

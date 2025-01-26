@@ -7,11 +7,11 @@
 //     return UserModel(
 //       map['id'],
 //       map['name'],
-//       map['email']  
+//       map['email']
 //     );
 //   }
 // }
-import '../../domain/entities/user.dart';
+import '../../../../core/comman/entities/user.dart';
 
 class UserModel extends User {
   UserModel({
@@ -22,9 +22,21 @@ class UserModel extends User {
 
   factory UserModel.fromJson(Map<String, dynamic> map) {
     return UserModel(
-      id: map['id'] ?? 'Unknown ID',  // Default value for missing id
-      name: map['name'] ?? 'Unknown Name',  // Default value for missing name
-      email: map['email'] ?? 'Unknown Email',  // Default value for missing email
+      id: map['id'] ?? 'Unknown ID', // Default value for missing id
+      name: map['name'] ?? 'Unknown Name', // Default value for missing name
+      email: map['email'] ?? 'Unknown Email', // Default value for missing email
+    );
+  }
+
+  UserModel copyWith({
+    String? id,
+    String? email,
+    String? name,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      name: name ?? this.name,
     );
   }
 }
