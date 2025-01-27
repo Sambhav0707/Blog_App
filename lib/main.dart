@@ -7,6 +7,7 @@ import 'package:blog_app/features/Auth/domain/repository/auth_repository.dart';
 import 'package:blog_app/features/Auth/domain/useCases/user_sign_up.dart';
 import 'package:blog_app/features/Auth/presentation/bloc/auth_bloc.dart';
 import 'package:blog_app/features/Auth/presentation/pages/login_page.dart';
+import 'package:blog_app/features/blogs/presentation/pages/blog_page.dart';
 import 'package:blog_app/init_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,11 +65,7 @@ class _MyAppState extends State<MyApp> {
         },
         builder: (context, isLoggedIn) {
           if (isLoggedIn) {
-            return const Scaffold(
-              body: Center(
-                child: Text("logged in"),
-              ),
-            );
+            return BlogPage();
           } else {
             return LoginPage();
           }
