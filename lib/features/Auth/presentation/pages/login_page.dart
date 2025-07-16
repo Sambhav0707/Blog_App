@@ -5,6 +5,7 @@ import 'package:blog_app/features/Auth/presentation/bloc/auth_bloc.dart';
 import 'package:blog_app/features/Auth/presentation/pages/signup_page.dart';
 import 'package:blog_app/features/Auth/presentation/widgets/auth_field.dart';
 import 'package:blog_app/features/Auth/presentation/widgets/auth_field_button.dart';
+import 'package:blog_app/features/blogs/presentation/pages/blog_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,12 +27,17 @@ class LoginPage extends StatelessWidget {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
-              return showSnackBar(context , state.message);
+              return showSnackBar(context, state.message);
+            } else if (state is AuthSuccess) {
+               Navigator.pushAndRemoveUntil(
+                context,
+                BlogPage.Route(),
+                (route) => false,
+              );
             }
-           
           },
           builder: (context, state) {
-              if (state is AuthLoading) {
+            if (state is AuthLoading) {
               return const Loader();
             }
             return Form(
@@ -112,3 +118,15 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
