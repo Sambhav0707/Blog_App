@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:blog_app/core/error/failures.dart';
 import 'package:blog_app/core/error/server_exception.dart';
+import 'package:blog_app/core/network/network_info.dart';
+import 'package:blog_app/features/blogs/data/data_sources/blog_local_data_source.dart';
 import 'package:blog_app/features/blogs/data/data_sources/blog_remote_data_source.dart';
 import 'package:blog_app/features/blogs/data/models/blog_model.dart';
 import 'package:blog_app/features/blogs/domian/entities/blog.dart';
@@ -12,8 +14,14 @@ import 'package:uuid/uuid.dart';
 
 class BlogRepositoryImpl implements BlogRepository {
   final BlogRemoteDataSource blogRemoteDataSource;
+  final BlogLocalDataSource blogLocalDataSource;
+  final NetworkInfo networkInfo;
 
-  BlogRepositoryImpl(this.blogRemoteDataSource);
+  BlogRepositoryImpl(
+    this.blogRemoteDataSource,
+    this.blogLocalDataSource,
+    this.networkInfo,
+  );
 
   @override
   Future<Either<Failures, Blog>> uploadBlog({
@@ -24,6 +32,9 @@ class BlogRepositoryImpl implements BlogRepository {
     required List<String> topics,
   }) async {
     try {
+      if (!await (networkInfo.isConnected())) {
+        return Left(Failures("no internet connection"));
+      }
       BlogModel blogModel = BlogModel(
         id: const Uuid().v1(),
         title: title,
@@ -57,7 +68,13 @@ class BlogRepositoryImpl implements BlogRepository {
   @override
   Future<Either<Failures, List<Blog>>> getBlogs() async {
     try {
+      if (!await (networkInfo.isConnected())) {
+        final blogs = blogLocalDataSource.getBlogs();
+        return Right(blogs);
+      }
+
       final blogs = await blogRemoteDataSource.getAllBlogs();
+      blogLocalDataSource.uploadBlogs(blogs: blogs);
       return Right(blogs);
     } on ServerException catch (e) {
       log(e.message);
